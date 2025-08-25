@@ -1,35 +1,152 @@
-# Target Price Apartment Calculator
-
-A FastAPI-based web application for calculating apartment target prices in Israel, taking into account various factors like location, size, and market conditions.
-
-## Preview
+# מחשבון מחיר דירה - פרויקט מחיר מטרה
 
 ![Application Preview](prev.png)
 
-## Features
+אפליקציה לחישוב מחיר דירות בפרויקטים של "מחיר מטרה" לפי הנוסחה הרשמית.
 
-- Calculate target apartment prices based on multiple parameters
-- Consider location factors and market conditions
-- User-friendly Hebrew interface
-- Real-time price calculations
-- Detailed breakdown of price components
+## תכונות
 
-## Getting Started
+- חישוב מחיר דירה לפי נוסחת המשקלות הרשמית
+- ממשק משתמש פשוט ונוח בעברית
+- הצגת פירוט מלא של החישוב
+- בדיקת הגבלת הפרש מקסימלי (600,000 ₪)
+- טעינה אוטומטית של דוגמה מהקובץ המקורי
 
-1. Install dependencies:
+## נוסחת החישוב
+
+המחיר מחושב לפי המשקלות הבאות:
+- **שטח דירה**: 100% (מקדם 1.0)
+- **מרפסת**: 30% (מקדם 0.3) - עד 30 מ"ר
+- **גינה**: 40% (מקדם 0.4)
+- **חניה**: 200% (מקדם 2.0) - כל מקום חניה
+
+### שלבי החישוב:
+1. חישוב שטח משוקלל
+2. מחיר בסיסי = מחיר בסיסי למ"ר × שטח משוקלל
+3. מחיר עדכני = מחיר עדכני למ"ר × שטח משוקלל  
+4. מחיר עם הנחה = מחיר בסיסי × 0.75
+5. בדיקת הפרש מקסימלי (600,000 ₪)
+6. קביעת מחיר סופי
+
+## התקנה והפעלה
+
+### דרישות מקדימות
+- Python 3.8 ומעלה
+- pip (מנהל החבילות של Python)
+
+### שלבי ההתקנה:
+
+1. **הורדת הקבצים**
    ```bash
-   pip install -r requirements.txt
+   # צרו תיקייה חדשה לפרויקט
+   mkdir target-price-calc
+   cd target-price-calc
    ```
 
-2. Run the application:
+2. **יצירת סביבה וירטואלית (מומלץ)**
    ```bash
-   uvicorn main:app --reload
+   python -m venv .venv
+   
+   # הפעלה בWindows:
+   .venv\Scripts\activate
+   
+   # הפעלה במק/לינוקס:
+   source .venv/bin/activate
    ```
 
-3. Open your browser and navigate to `http://localhost:8000`
+3. **התקנת תלויות FastAPI**
+   ```bash
+   pip install fastapi uvicorn python-multipart
+   ```
 
-## Technology Stack
+4. **מבנה התיקיות**
+   ```
+   target-price-calc/
+   ├── app.py
+   ├── templates/
+   │   └── index.html
+   ├── .gitignore
+   └── README.md
+   ```
 
-- **Backend**: FastAPI
-- **Frontend**: HTML/CSS/JavaScript
-- **Language**: Python
+5. **הפעלת השרת FastAPI**
+   ```bash
+   # הפעלה עם uvicorn
+   uvicorn app:app --host 0.0.0.0 --port 8181 --reload
+   
+   # או הפעלה ישירה
+   python app.py
+   ```
+
+6. **פתיחת הדפדפן**
+   - גשו לכתובת: http://localhost:8181
+   - האפליקציה תיפתח עם דוגמה טעונה מראש
+   - תיעוד API אוטומטי זמין ב: http://localhost:8181/docs
+
+## שימוש באפליקציה
+
+1. **הזינו את הנתונים:**
+   - שטח הדירה במ"ר
+   - שטח המרפסת במ"ר (אופציונלי)
+   - שטח הגינה במ"ר (אופציונלי) 
+   - מספר מקומות חניה
+   - מחיר בסיסי למ"ר (מהפרויקט)
+   - מחיר עדכני למ"ר (מהפרויקט)
+
+2. **לחצו על "חשב מחיר דירה"**
+
+3. **צפו בתוצאות:**
+   - מחיר סופי של הדירה
+   - חיסכון לעומת מחיר השוק
+   - פירוט מלא של החישוב
+
+## דוגמה
+
+הדוגמה הטעונה מראש מהקובץ המקורי:
+- שטח דירה: 100 מ"ר
+- מרפסת: 12 מ"ר  
+- גינה: 8 מ"ר
+- חניות: 1
+- מחיר בסיסי: 13,808 ₪/מ"ר
+- מחיר עדכני: 18,201 ₪/מ"ר
+
+**תוצאה צפויה: 1,380,268 ₪**
+
+## תכונות FastAPI
+
+- **ביצועים גבוהים**: FastAPI מבוסס על Starlette ו-Pydantic לביצועים מעולים
+- **תיעוד אוטומטי**: API docs זמין ב-/docs ו-/redoc
+- **אימות נתונים**: אימות אוטומטי של נתוני הקלט
+- **תמיכה אסינכרונית**: תמיכה מלאה בפעולות async/await
+
+## פתרון בעיות
+
+### האפליקציה לא נפתחת
+- ודאו ש-Python מותקן: `python --version`
+- ודאו ש-FastAPI מותקן: `pip show fastapi`
+- ודאו ש-Uvicorn מותקן: `pip show uvicorn`
+- בדקו שהפורט 8181 פנוי
+
+### שגיאות חישוב
+- ודאו שכל השדות מכילים מספרים חיוביים
+- ודאו שמחיר למ"ר גדול מ-0
+
+### בעיות תצוגה
+- רעננו את הדף (F5)
+- נסו דפדפן אחר
+- ודאו שיש חיבור לאינטרנט (עבור Bootstrap)
+- בדקו את לוגי השרת בטרמינל
+
+### API Testing
+- גשו ל-http://localhost:8181/docs לתיעוד אינטראקטיבי
+- בדקו את endpoint ה-/calculate ישירות
+- השתמשו ב-curl לבדיקת API:
+  ```bash
+  curl -X POST "http://localhost:8181/calculate" \
+       -H "Content-Type: application/json" \
+       -d '{"apartment_area": 100, "balcony_area": 12, "garden_area": 8, "parking_spots": 1, "base_price_per_sqm": 13808, "current_price_per_sqm": 18201}'
+  ```
+
+## רישיון
+
+פרויקט זה נועד לעזרה בחישובים בלבד ואינו מהווה ייעוץ משפטי או פיננסי.
