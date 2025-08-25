@@ -71,33 +71,53 @@
 <body>
     <div class="main-container">
         <h1 class="text-center mb-4">מחשבון מחיר דירה - פרויקט מחיר מטרה</h1>
+        <p class="text-center text-muted mb-4">מבוסס על 3 מחשבונים רשמיים של משרד השיכון</p>
         
         <div class="example-values">
-            <h6>דוגמה מהקובץ:</h6>
+            <h6>דוגמאות מקבצי Excel הרשמיים:</h6>
             <div class="row">
-                <div class="col-md-6">
-                    <small>שטח דירה: 100 מ"ר | מרפסת: 12 מ"ר | גינה: 8 מ"ר | חניות: 1</small>
+                <div class="col-md-4">
+                    <small><strong>מחיר מטרה 2.0:</strong><br>80 מ"ר, מרפסת 12, חניה 1<br>תוצאה: 854,577 ₪</small>
                 </div>
-                <div class="col-md-6">
-                    <small>מחיר בסיסי: 13,808 ₪/מ"ר | מחיר עדכני: 18,201 ₪/מ"ר</small>
+                <div class="col-md-4">
+                    <small><strong>מחיר מטרה 3.0:</strong><br>120 מ"ר, מרפסת 12, מחסן 6, חניות 2<br>תוצאה: 1,766,130 ₪</small>
+                </div>
+                <div class="col-md-4">
+                    <small><strong>מחיר למשתכן:</strong><br>120 מ"ר, מרפסת 15, מחסן 6, חניות 2<br>תוצאה: 1,133,110 ₪</small>
                 </div>
             </div>
         </div>
 
         <form id="priceCalculatorForm">
+            <!-- סוג פרויקט -->
+            <div class="mb-4">
+                <label for="project_type" class="form-label">סוג פרויקט</label>
+                <select class="form-select" id="project_type" required>
+                    <option value="target_3.0" selected>מחיר מטרה 3.0 (מאוגוסט 2023 ואילך)</option>
+                    <option value="target_2.0">מחיר מטרה 2.0 (עד יולי 2023)</option>
+                    <option value="buyer_reduced">מחיר למשתכן / מחיר מופחת</option>
+                </select>
+                <div class="form-text text-muted" id="project_type_help">
+                    בחרו את סוג הפרויקט לפי תאריך זכיית הקבלן או סוג המכרז
+                </div>
+            </div>
+
+            <!-- שטחים -->
+            <h5 class="mb-3">שטחי הדירה</h5>
             <div class="row">
                 <div class="col-md-6">
                     <div class="input-group">
-                        <label for="apartment_area" class="form-label">שטח דירה (מ"ר)</label>
+                        <label for="apartment_area" class="form-label">שטח דירה (מ"ר) *</label>
                         <input type="number" step="0.1" class="form-control" id="apartment_area" 
-                               value="100" required min="0">
+                               value="120" required min="0">
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="input-group">
-                        <label for="balcony_area" class="form-label">שטח מרפסת (מ"ר)</label>
+                        <label for="balcony_area" class="form-label">שטח מרפסת שמש (מ"ר)</label>
                         <input type="number" step="0.1" class="form-control" id="balcony_area" 
                                value="12" min="0">
+                        <div class="form-text">חישוב בדרגות: 0-30מ"ר(30%), 30-60מ"ר(20%), 60-120מ"ר(10%)</div>
                     </div>
                 </div>
             </div>
@@ -107,14 +127,16 @@
                     <div class="input-group">
                         <label for="garden_area" class="form-label">שטח גינה (מ"ר)</label>
                         <input type="number" step="0.1" class="form-control" id="garden_area" 
-                               value="8" min="0">
+                               value="0" min="0">
+                        <div class="form-text">מקדם: 40%</div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="input-group">
-                        <label for="parking_spots" class="form-label">מספר מקומות חניה</label>
-                        <input type="number" class="form-control" id="parking_spots" 
-                               value="1" min="0" max="5">
+                        <label for="storage_area" class="form-label">שטח מחסן (מ"ר)</label>
+                        <input type="number" step="0.1" class="form-control" id="storage_area" 
+                               value="6" min="0">
+                        <div class="form-text">מקדם: 40%</div>
                     </div>
                 </div>
             </div>
@@ -122,35 +144,103 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="input-group">
-                        <label for="base_price_per_sqm" class="form-label">מחיר בסיסי למ"ר (₪)</label>
+                        <label for="parking_spots" class="form-label">מספר מקומות חניה</label>
+                        <input type="number" class="form-control" id="parking_spots" 
+                               value="2" min="0" max="5">
+                        <div class="form-text">מקדם: 200% (כל מקום)</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <!-- מקום לשדות נוספים -->
+                </div>
+            </div>
+
+            <!-- מחירים -->
+            <h5 class="mb-3 mt-4">מחירים</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <label for="base_price_per_sqm" class="form-label">מחיר בסיסי למ"ר (₪) *</label>
                         <input type="number" class="form-control" id="base_price_per_sqm" 
                                value="13808" required min="0">
+                        <div class="form-text" id="base_price_help">מחיר בסיס דצמבר 2020</div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="input-group">
                         <label for="current_price_per_sqm" class="form-label">מחיר עדכני למ"ר (₪)</label>
                         <input type="number" class="form-control" id="current_price_per_sqm" 
-                               value="18201" required min="0">
+                               value="18201" min="0">
+                        <div class="form-text" id="current_price_help">נדרש רק למחיר מטרה 3.0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- שדות מתקדמים -->
+            <div id="advanced_fields">
+                <h5 class="mb-3 mt-4">הגדרות מתקדמות</h5>
+                <div class="row">
+                    <div class="col-md-6" id="indexation_field" style="display: none;">
+                        <div class="input-group">
+                            <label for="indexation_factor" class="form-label">מקדם הצמדה</label>
+                            <input type="number" step="0.001" class="form-control" id="indexation_factor" 
+                                   value="0.103" min="0" max="1">
+                            <div class="form-text">להגבלת ההנחה ל-500,000 ₪ (מחיר מטרה 2.0)</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6" id="discount_limit_field">
+                        <div class="input-group">
+                            <label for="discount_limit" class="form-label">הגבלת הנחה (₪)</label>
+                            <select class="form-select" id="discount_limit">
+                                <option value="600000" selected>600,000 ₪</option>
+                                <option value="500000">500,000 ₪</option>
+                            </select>
+                            <div class="form-text">מופיע בפרטי הפרויקט באתר דירה בהנחה</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- חישוב קומה -->
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <label for="building_floors" class="form-label">מספר קומות בבניין</label>
+                            <input type="number" class="form-control" id="building_floors" 
+                                   value="20" min="1" max="50">
+                            <div class="form-text">חישוב קומה רלוונטי רק לבניינים מעל 10 קומות</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <label for="apartment_floor" class="form-label">קומת הדירה</label>
+                            <input type="number" class="form-control" id="apartment_floor" 
+                                   value="12" min="1" max="50">
+                            <div class="form-text">התאמת מחיר: +/-0.5% לכל קומה</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="text-center mt-4">
+                <button type="button" class="btn btn-outline-secondary me-2" onclick="loadExample()">טען דוגמה</button>
                 <button type="submit" class="btn btn-primary btn-calculate">חשב מחיר דירה</button>
             </div>
         </form>
 
         <div id="results" style="display: none;">
             <div class="result-card">
-                <h3 class="text-center mb-3">תוצאות החישוב</h3>
+                <h3 class="text-center mb-3">תוצאות החישוב - <span id="project_type_result"></span></h3>
                 
                 <div class="text-center mb-4">
                     <div class="price-highlight">
                         מחיר הדירה הסופי: <span id="final_price"></span> ₪
                     </div>
-                    <div class="mt-2">
+                    <div class="mt-2" id="savings_section">
                         <span class="success-text">חיסכון: <span id="savings"></span> ₪</span>
+                    </div>
+                    <div class="mt-2" id="floor_adjustment_section" style="display: none;">
+                        <span class="text-info">מחיר עם התאמת קומה: <span id="price_with_floor_adjustment"></span> ₪</span><br>
+                        <small>(התאמה של <span id="floor_adjustment_percent"></span>%)</small>
                     </div>
                 </div>
 
@@ -158,23 +248,23 @@
                     <h5>פירוט החישוב:</h5>
                     <div class="row">
                         <div class="col-md-6">
-                            <p><strong>שטח משוקלל:</strong> <span id="weighted_area"></span> יח'</p>
-                            <p><strong>מחיר בסיסי כולל:</strong> <span id="base_total_price"></span> ₪</p>
-                            <p><strong>מחיר עדכני כולל:</strong> <span id="current_total_price"></span> ₪</p>
+                            <p><strong>שטח משוקלל:</strong> <span id="weighted_area"></span> מ"ר</p>
+                            <p id="base_price_line"><strong>מחיר בסיסי כולל:</strong> <span id="base_total_price"></span> ₪</p>
+                            <p id="current_price_line" style="display: none;"><strong>מחיר עדכני כולל:</strong> <span id="current_total_price"></span> ₪</p>
                         </div>
                         <div class="col-md-6">
-                            <p><strong>מחיר עם 25% הנחה:</strong> <span id="discounted_price"></span> ₪</p>
-                            <p><strong>הפרש מחירים:</strong> <span id="price_difference"></span> ₪</p>
-                            <p id="difference_status"></p>
+                            <p id="discount_line" style="display: none;"><strong>מחיר עם הנחה:</strong> <span id="discount_amount"></span> ₪</p>
+                            <p id="savings_calculation" style="display: none;"><strong>חיסכון מחושב:</strong> <span id="calculated_savings"></span> ₪</p>
+                            <p id="discount_limit_line" style="display: none;"><strong>הגבלת הנחה:</strong> <span id="discount_limit_used"></span> ₪</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="mt-3">
+                <div class="mt-3" id="calculation_explanation">
                     <small class="text-muted">
-                        <strong>הסבר החישוב:</strong> המחיר מחושב לפי נוסחת המשקלות: 
-                        דירה×1 + מרפסת×0.3 + גינה×0.4 + חניה×2, 
-                        עם הגבלה מקסימלית של 600,000 ₪ הפרש ממחיר הבסיס.
+                        <strong>הסבר החישוב:</strong> המחיר מחושב לפי נוסחת המשקלות הרשמית: 
+                        דירה×1 + מרפסת(דרגות) + גינה×0.4 + מחסן×0.4 + חניה×2.
+                        <span id="specific_calculation_note"></span>
                     </small>
                 </div>
             </div>
@@ -183,16 +273,93 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // איניציאליזציה של הטופס
+        document.addEventListener('DOMContentLoaded', function() {
+            updateFieldsVisibility();
+            document.getElementById('project_type').addEventListener('change', updateFieldsVisibility);
+        });
+
+        function updateFieldsVisibility() {
+            const projectType = document.getElementById('project_type').value;
+            const currentPriceField = document.getElementById('current_price_per_sqm');
+            const currentPriceHelp = document.getElementById('current_price_help');
+            const basePriceHelp = document.getElementById('base_price_help');
+            const indexationField = document.getElementById('indexation_field');
+            const discountLimitField = document.getElementById('discount_limit_field');
+            
+            // איפוס שדות לפי סוג פרויקט
+            if (projectType === 'target_3.0') {
+                currentPriceField.required = true;
+                currentPriceHelp.textContent = 'נדרש למחיר מטרה 3.0';
+                basePriceHelp.textContent = 'מחיר בסיס דצמבר 2020';
+                indexationField.style.display = 'none';
+                discountLimitField.style.display = 'block';
+            } else if (projectType === 'target_2.0') {
+                currentPriceField.required = false;
+                currentPriceHelp.textContent = 'לא נדרש למחיר מטרה 2.0';
+                basePriceHelp.textContent = 'מחיר בסיסי למ"ר';
+                indexationField.style.display = 'block';
+                discountLimitField.style.display = 'none';
+            } else { // buyer_reduced
+                currentPriceField.required = false;
+                currentPriceHelp.textContent = 'לא נדרש למחיר למשתכן';
+                basePriceHelp.textContent = 'מחיר למ"ר';
+                indexationField.style.display = 'none';
+                discountLimitField.style.display = 'none';
+            }
+        }
+
+        function loadExample() {
+            const projectType = document.getElementById('project_type').value;
+            
+            if (projectType === 'target_2.0') {
+                // דוגמה ממחיר מטרה 2.0
+                document.getElementById('apartment_area').value = '80';
+                document.getElementById('balcony_area').value = '12';
+                document.getElementById('garden_area').value = '0';
+                document.getElementById('storage_area').value = '0';
+                document.getElementById('parking_spots').value = '1';
+                document.getElementById('base_price_per_sqm').value = '12479.22';
+                document.getElementById('current_price_per_sqm').value = '';
+                document.getElementById('indexation_factor').value = '0.103';
+            } else if (projectType === 'target_3.0') {
+                // דוגמה ממחיר מטרה 3.0
+                document.getElementById('apartment_area').value = '120';
+                document.getElementById('balcony_area').value = '12';
+                document.getElementById('garden_area').value = '0';
+                document.getElementById('storage_area').value = '6';
+                document.getElementById('parking_spots').value = '2';
+                document.getElementById('base_price_per_sqm').value = '13808';
+                document.getElementById('current_price_per_sqm').value = '18201';
+                document.getElementById('discount_limit').value = '600000';
+            } else { // buyer_reduced
+                // דוגמה ממחיר למשתכן
+                document.getElementById('apartment_area').value = '120';
+                document.getElementById('balcony_area').value = '15';
+                document.getElementById('garden_area').value = '0';
+                document.getElementById('storage_area').value = '6';
+                document.getElementById('parking_spots').value = '2';
+                document.getElementById('base_price_per_sqm').value = '8656.3';
+                document.getElementById('current_price_per_sqm').value = '';
+            }
+        }
+
         document.getElementById('priceCalculatorForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const formData = {
+                project_type: document.getElementById('project_type').value,
                 apartment_area: parseFloat(document.getElementById('apartment_area').value) || 0,
                 balcony_area: parseFloat(document.getElementById('balcony_area').value) || 0,
                 garden_area: parseFloat(document.getElementById('garden_area').value) || 0,
+                storage_area: parseFloat(document.getElementById('storage_area').value) || 0,
                 parking_spots: parseInt(document.getElementById('parking_spots').value) || 0,
                 base_price_per_sqm: parseFloat(document.getElementById('base_price_per_sqm').value) || 0,
-                current_price_per_sqm: parseFloat(document.getElementById('current_price_per_sqm').value) || 0
+                current_price_per_sqm: parseFloat(document.getElementById('current_price_per_sqm').value) || null,
+                indexation_factor: parseFloat(document.getElementById('indexation_factor').value) || 0,
+                discount_limit: parseInt(document.getElementById('discount_limit').value) || 600000,
+                building_floors: parseInt(document.getElementById('building_floors').value) || null,
+                apartment_floor: parseInt(document.getElementById('apartment_floor').value) || null
             };
 
             try {
@@ -205,7 +372,8 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error('שגיאה בחישוב');
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'שגיאה בחישוב');
                 }
 
                 const result = await response.json();
@@ -216,22 +384,71 @@
         });
 
         function displayResults(result) {
-            // הצגת התוצאות
-            document.getElementById('final_price').textContent = result.final_price.toLocaleString();
-            document.getElementById('savings').textContent = result.savings.toLocaleString();
-            document.getElementById('weighted_area').textContent = result.weighted_area;
-            document.getElementById('base_total_price').textContent = result.base_total_price.toLocaleString();
-            document.getElementById('current_total_price').textContent = result.current_total_price.toLocaleString();
-            document.getElementById('discounted_price').textContent = result.discounted_price.toLocaleString();
-            document.getElementById('price_difference').textContent = result.price_difference.toLocaleString();
+            // הצגת סוג פרויקט
+            document.getElementById('project_type_result').textContent = result.project_type || 'מחשבון מחיר דירה';
             
-            // הצגת סטטוס ההפרש
-            const statusElement = document.getElementById('difference_status');
-            if (result.max_difference_exceeded) {
-                statusElement.innerHTML = '<span class="warning-text">הפרש עולה על 600,000 ₪ - הוחל מגבל</span>';
+            // מחיר סופי
+            document.getElementById('final_price').textContent = result.final_price.toLocaleString();
+            document.getElementById('weighted_area').textContent = result.weighted_area;
+            
+            // הצגת שדות לפי סוג פרויקט
+            if (result.savings !== undefined) {
+                document.getElementById('savings_section').style.display = 'block';
+                document.getElementById('savings').textContent = result.savings.toLocaleString();
             } else {
-                statusElement.innerHTML = '<span class="success-text">הפרש בטווח המותר</span>';
+                document.getElementById('savings_section').style.display = 'none';
             }
+            
+            // חישוב קומה
+            if (result.price_with_floor_adjustment !== undefined) {
+                document.getElementById('floor_adjustment_section').style.display = 'block';
+                document.getElementById('price_with_floor_adjustment').textContent = result.price_with_floor_adjustment.toLocaleString();
+                document.getElementById('floor_adjustment_percent').textContent = result.floor_adjustment_percent > 0 ? '+' + result.floor_adjustment_percent : result.floor_adjustment_percent;
+            } else {
+                document.getElementById('floor_adjustment_section').style.display = 'none';
+            }
+            
+            // מחירים בסיסיים
+            if (result.base_total_price !== undefined) {
+                document.getElementById('base_price_line').style.display = 'block';
+                document.getElementById('base_total_price').textContent = result.base_total_price.toLocaleString();
+            } else {
+                document.getElementById('base_price_line').style.display = 'none';
+            }
+            
+            if (result.current_total_price !== undefined) {
+                document.getElementById('current_price_line').style.display = 'block';
+                document.getElementById('current_total_price').textContent = result.current_total_price.toLocaleString();
+            } else {
+                document.getElementById('current_price_line').style.display = 'none';
+            }
+            
+            // פרטי הנחה
+            if (result.discount_amount !== undefined) {
+                document.getElementById('discount_line').style.display = 'block';
+                document.getElementById('discount_amount').textContent = result.discount_amount.toLocaleString();
+            } else {
+                document.getElementById('discount_line').style.display = 'none';
+            }
+            
+            if (result.discount_limit_used !== undefined) {
+                document.getElementById('discount_limit_line').style.display = 'block';
+                document.getElementById('discount_limit_used').textContent = result.discount_limit_used.toLocaleString();
+            } else {
+                document.getElementById('discount_limit_line').style.display = 'none';
+            }
+            
+            // הסבר מותאם אישי
+            let specificNote = '';
+            const projectType = document.getElementById('project_type').value;
+            if (projectType === 'target_2.0') {
+                specificNote = ' הנחה: 20% או 300,000 ₪.';
+            } else if (projectType === 'target_3.0') {
+                specificNote = ' הנחה: 25% או 600,000 ₪, לא יעלה על מחיר דצמבר 2020.';
+            } else {
+                specificNote = ' מחיר קבוע ללא הנחות נוספות.';
+            }
+            document.getElementById('specific_calculation_note').textContent = specificNote;
 
             // הצגת תוצאות
             document.getElementById('results').style.display = 'block';
@@ -242,7 +459,7 @@
 
         // טעינת דוגמה אוטומטית בעת טעינת העמוד
         window.addEventListener('load', function() {
-            document.getElementById('priceCalculatorForm').dispatchEvent(new Event('submit'));
+            loadExample(); // טען דוגמה בלבד
         });
     </script>
 </body>
